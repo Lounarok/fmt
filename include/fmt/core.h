@@ -3213,6 +3213,42 @@ FMT_INLINE void print(std::FILE* f, format_string<T...> fmt, T&&... args) {
                            : detail::vprint_mojibake(f, fmt, vargs);
 }
 
+/**
+  \rst
+  Formats ``args`` according to specifications in ``fmt`` and writes the output
+  to ``stdout``.
+
+  **Example**::
+
+    fmt::print("Elapsed time: {0:.2f} seconds", 1.23);
+  \endrst
+ */
+template <typename... T>
+FMT_INLINE void println(format_string<T...> fmt, T&&... args) {
+  // Append std::endl for format_string
+  const auto& vargs = fmt::make_format_args(args...);
+  return detail::is_utf8() ? vprint(fmt, vargs)
+                           : detail::vprint_mojibake(stdout, fmt, vargs);
+}
+
+/**
+  \rst
+  Formats ``args`` according to specifications in ``fmt`` and writes the
+  output to the file ``f``.
+
+  **Example**::
+
+    fmt::print(stderr, "Don't {}!", "panic");
+  \endrst
+ */
+template <typename... T>
+FMT_INLINE void println(std::FILE* f, format_string<T...> fmt, T&&... args) {
+  // Append std::endl for format_string
+  const auto& vargs = fmt::make_format_args(args...);
+  return detail::is_utf8() ? vprint(f, fmt, vargs)
+                           : detail::vprint_mojibake(f, fmt, vargs);
+}
+
 FMT_MODULE_EXPORT_END
 FMT_GCC_PRAGMA("GCC pop_options")
 FMT_END_NAMESPACE
